@@ -1,0 +1,12 @@
+#put the String values for each of these in here, I did this because I don't want any possibly sensitive information on github
+#general
+temporaryFilePath::
+
+#Authorizor
+dbUsername::
+dbPassword::
+dbURL::
+
+#MainMenuMiniClient
+MainMenuAuthToken::
+DefaultAuthorizedDirectories::
