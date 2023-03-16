@@ -1,4 +1,4 @@
-package serverapp;
+package Sapphire;
 
 import java.util.HashMap;
 import java.util.Scanner;

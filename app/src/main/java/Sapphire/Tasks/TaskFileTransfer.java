@@ -1,6 +1,6 @@
-package serverapp.Tasks;
+package Sapphire.Tasks;
 
-import serverapp.Networking.StructuredRequest;
+import Sapphire.Networking.StructuredRequest;
 import spark.Response;
 import static spark.Spark.halt;
 import java.io.*;

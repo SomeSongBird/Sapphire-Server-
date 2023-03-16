@@ -1,12 +1,12 @@
-package serverapp.Menu;
+package Sapphire.Menu;
 
 //#region imports
 import java.util.HashMap;
 import java.util.Scanner;
-import serverapp.Tasks.ITaskManager;
-import serverapp.Auth.IAuthorizor;
-import serverapp.Logging.ILogger;
-import serverapp.*;
+import Sapphire.Tasks.ITaskManager;
+import Sapphire.Auth.IAuthorizor;
+import Sapphire.Logging.ILogger;
+import Sapphire.*;
 //#endregion imports
 
 public class Menu implements Runnable{

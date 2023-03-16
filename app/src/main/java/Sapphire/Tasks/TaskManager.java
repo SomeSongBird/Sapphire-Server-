@@ -1,9 +1,9 @@
-package serverapp.Tasks;
+package Sapphire.Tasks;
 
-import serverapp.Auth.IAuthorizor;
-import serverapp.Logging.*;
-import serverapp.Networking.*;
-import serverapp.Tasks.Enums.TaskType;
+import Sapphire.Auth.IAuthorizor;
+import Sapphire.Logging.*;
+import Sapphire.Networking.*;
+import Sapphire.Tasks.Enums.TaskType;
 import spark.Response;
 import static spark.Spark.halt;
 

@@ -1,6 +1,6 @@
-package serverapp.Tasks;
+package Sapphire.Tasks;
 
-import serverapp.Networking.StructuredRequest;
+import Sapphire.Networking.StructuredRequest;
 
 
 /* region names used:

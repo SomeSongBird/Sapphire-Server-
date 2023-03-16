@@ -1,8 +1,8 @@
-package serverapp.Auth;
+package Sapphire.Auth;
 
 import java.util.HashMap;
-import serverapp.*;
-import serverapp.Menu.Menu;
+import Sapphire.*;
+import Sapphire.Menu.Menu;
 import java.sql.*;
 
 public class Authorizor implements IAuthorizor{

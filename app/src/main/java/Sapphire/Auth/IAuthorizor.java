@@ -1,4 +1,4 @@
-package serverapp.Auth;
+package Sapphire.Auth;
 
 import java.util.HashMap;
 

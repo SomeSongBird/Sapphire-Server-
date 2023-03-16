@@ -1,11 +1,11 @@
-package serverapp.Networking;
+package Sapphire.Networking;
 
 import static spark.Spark.*;
 
 
 import spark.Response;
-import serverapp.Tasks.*;
-import serverapp.Tasks.Enums.TaskType;
+import Sapphire.Tasks.*;
+import Sapphire.Tasks.Enums.TaskType;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.zip.*;

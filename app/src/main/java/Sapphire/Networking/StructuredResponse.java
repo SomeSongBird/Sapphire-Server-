@@ -1,4 +1,4 @@
-package serverapp.Networking;
+package Sapphire.Networking;
 
 //#region imports
 import java.util.Arrays;

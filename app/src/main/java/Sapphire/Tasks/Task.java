@@ -1,6 +1,6 @@
-package serverapp.Tasks;
+package Sapphire.Tasks;
 
-import serverapp.Networking.*;
+import Sapphire.Networking.*;
 import spark.Response;
 
 public abstract class Task{

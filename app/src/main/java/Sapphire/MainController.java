@@ -1,10 +1,10 @@
-package serverapp;
+package Sapphire;
 
-import serverapp.Menu.Menu;
-import serverapp.Networking.*;
-import serverapp.Tasks.*;
-import serverapp.Logging.*;
-import serverapp.Auth.*;
+import Sapphire.Menu.Menu;
+import Sapphire.Networking.*;
+import Sapphire.Tasks.*;
+import Sapphire.Logging.*;
+import Sapphire.Auth.*;
 
 import java.io.FileNotFoundException;
 

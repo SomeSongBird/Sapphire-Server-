@@ -1,4 +1,4 @@
-package serverapp.Tasks.Enums;
+package Sapphire.Tasks.Enums;
 
 public enum TaskType{
     fileTransfer,       // transfer file from one client to another (include a partial subversion to only pull from a client)

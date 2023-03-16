@@ -1,7 +1,7 @@
-package serverapp.Tasks;
+package Sapphire.Tasks;
 
-import serverapp.Networking.*;
-import serverapp.Tasks.Enums.TaskType;
+import Sapphire.Networking.*;
+import Sapphire.Tasks.Enums.TaskType;
 import spark.Response;
 
 public interface ITaskManager{

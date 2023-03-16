@@ -1,13 +1,13 @@
-package serverapp.Menu;
+package Sapphire.Menu;
 
 //#region imports
-import serverapp.Tasks.*;
-import serverapp.Tasks.Enums.TaskType;
+import Sapphire.Tasks.*;
+import Sapphire.Tasks.Enums.TaskType;
 import java.io.*;
 import java.net.*;
 import java.util.zip.*;
-import serverapp.Networking.StructuredRequest;
-import serverapp.Networking.StructuredResponse;
+import Sapphire.Networking.StructuredRequest;
+import Sapphire.Networking.StructuredResponse;
 //#endregion imports
 
 public class MenuMiniClient implements Runnable{
@@ -19,7 +19,7 @@ public class MenuMiniClient implements Runnable{
     ITaskManager taskManager;
     String[] authorizedDirectories;
 
-    public MenuMiniClient(ITaskManager tm, serverapp.StringReader sr){
+    public MenuMiniClient(ITaskManager tm, Sapphire.StringReader sr){
         // read authToken
         authToken = sr.getString("MainMenuAuthToken");
         temporaryFilePath = sr.getString("temporaryFilePath");
