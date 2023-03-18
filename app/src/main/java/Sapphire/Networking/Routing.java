@@ -29,8 +29,8 @@ public class Routing implements IRouting{
         post("/update_directory/compliance", (req,res)-> taskManager.updateTasks(new StructuredRequest(req)));
 
         // get request > start new task > wait for other client to update > send requested file name > wait for other client to return location of file > wait for first client to update > send file location to first client
-        post("/remote_start/request", (req,res)-> taskManager.startNewTask(TaskType.RemoteStart, new Request(req.body())));
-        post("/remote_start/compliance", (req,res)-> taskManager.updateTasks(new StructuredRequest(res)));
+        post("/remote_start/request", (req,res)-> taskManager.startNewTask(TaskType.remoteStart, new StructuredRequest(req)));
+        post("/remote_start/compliance", (req,res)-> taskManager.updateTasks(new StructuredRequest(req)));
         // get request > start new task > wait for other client to update 
         // (if no file included) > request file from that client > recieve file > store file localy > wait for first client to update > send file to first client
         // (if file included) > recieve file > store file localy > wait for other client to update > send file to other client

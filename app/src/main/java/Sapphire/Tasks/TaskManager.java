@@ -7,7 +7,6 @@ import Sapphire.Tasks.Enums.TaskType;
 import spark.Response;
 import static spark.Spark.halt;
 
-import java.security.spec.ECFieldF2m;
 
 public class TaskManager implements ITaskManager {
     //#region init
