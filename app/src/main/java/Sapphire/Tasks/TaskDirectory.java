@@ -23,12 +23,13 @@ public class TaskDirectory extends Task {
         switch(step){
             // get request > start new task > wait for other client to update > request directory structure > recieve dir > wait for first to update > send dir
             case requesting:
-                outputString = "<directory_request>directory_request</directory_request>\r\n"; // extraDetails[0] will be the path of the dir to branch down from
+                outputString += "<directory_request>directory_request</directory_request>\r\n"; // extraDetails[0] will be the path of the dir to branch down from
                 step = Step.responding;
                 return;
             case responding:
                 nextClientID = firstClientID;
-                outputString = "<directory_details>"+r.extraDetails.get("directory_details")+"</directory_details>\r\n"; // in this case, extraDetails[0] will be the full dir structure from the other client
+                outputString += "<directory_details>"+r.extraDetails.get("directory_details")+"</directory_details>\r\n"; // in this case, extraDetails[0] will be the full dir structure from the other client
+                outputString += "<target_client>"+r.clientID+"</target_client>";
                 step = Step.closing;
                 return;
             default:
