@@ -59,6 +59,9 @@ public class Authorizor implements IAuthorizor{
             stmt.setInt(1, deviceID);
             stmt.execute();
             
+            stmt = conn.prepareCall("ALTER TABLE "+tableName+" AUTO_INCREMENT=?");
+            stmt.setInt(1,deviceID);
+            stmt.execute();
             return !(checkDeviceExists(deviceID));
         }catch(Exception e){
             return false;
