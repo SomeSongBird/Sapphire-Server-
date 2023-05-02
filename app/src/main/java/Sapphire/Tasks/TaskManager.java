@@ -1,12 +1,14 @@
 package Sapphire.Tasks;
 
+import java.util.HashMap;
+
 import Sapphire.Auth.IAuthorizor;
 import Sapphire.Logging.*;
 import Sapphire.Networking.*;
 import Sapphire.Tasks.Enums.TaskType;
+
 import spark.Response;
 import static spark.Spark.halt;
-
 
 public class TaskManager implements ITaskManager {
     //#region init
@@ -126,6 +128,25 @@ public class TaskManager implements ITaskManager {
         return false;
     }
 
+    public Object sendClientList(StructuredRequest req, Response res){
+        String output = "<ClientList>";
+        try{
+            req.clientID = auth.checkAuth(req.authToken);
+            HashMap<Integer,String> clientList = auth.showAllDevices();
+            for(int i : clientList.keySet()){
+                if(i!=req.clientID){
+                    output = output + clientList.get(i);
+                }
+            }
+            output = output + "</ClientList>\r\n";
+
+            res.body(output);
+        }catch(Exception e){
+            halt(401,"Unauthorized Access");
+        }
+        return "";
+    }
+    
     //#endregion updates
 
     public void shutdownSequence(){
