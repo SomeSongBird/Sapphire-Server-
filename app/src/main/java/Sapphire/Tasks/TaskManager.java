@@ -108,7 +108,8 @@ public class TaskManager implements ITaskManager {
                 return task.getOutput(res);
             }
         }
-        return "none";
+        res.body("none");
+        return "";
     }
 
     public boolean updateTasks(StructuredRequest req){
