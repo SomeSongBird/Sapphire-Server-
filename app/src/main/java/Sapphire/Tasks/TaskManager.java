@@ -102,13 +102,12 @@ public class TaskManager implements ITaskManager {
             //log failed attempt
             halt(401,"Unauthorized Access");
         }
-
+        res.header("TaskID",-1);
         for(Task task: activeTasks){
             if(task.nextClientID==req.clientID){
                 return task.getOutput(res);
             }
         }
-        res.body("none");
         return "";
     }
 
