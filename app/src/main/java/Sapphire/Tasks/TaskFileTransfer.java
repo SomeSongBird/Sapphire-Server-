@@ -65,7 +65,7 @@ public class TaskFileTransfer extends Task{
             try(OutputStream bos = new BufferedOutputStream(res.raw().getOutputStream());
                 PrintWriter writer = new PrintWriter(bos);
             ){
-                writer.append("<final_path>"+final_path+"</final_path>").flush();
+                writer.append("<final_path>"+final_path+"</final_path>\r\n").flush();
                 
                 writer.append("<File>").flush();
                 Files.copy(file.toPath(),bos);

@@ -29,7 +29,7 @@ public class TaskDirectory extends Task {
             case responding:
                 nextClientID = firstClientID;
                 outputString += "<directory_details>"+r.extraDetails.get("directory_details")+"</directory_details>\r\n"; // in this case, extraDetails[0] will be the full dir structure from the other client
-                outputString += "<target_client>"+r.clientID+"</target_client>";
+                outputString += "<target_client>"+r.clientID+"</target_client>\r\n";
                 step = Step.closing;
                 return;
             default:
