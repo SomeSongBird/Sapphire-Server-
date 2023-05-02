@@ -135,7 +135,10 @@ public class TaskManager implements ITaskManager {
             HashMap<Integer,String> clientList = auth.showAllDevices();
             for(int i : clientList.keySet()){
                 if(i!=req.clientID){
-                    output = output + clientList.get(i);
+                    if(!output.equals("<ClientList>")){
+                        output = output+":";
+                    }
+                    output = output + i+","+clientList.get(i);
                 }
             }
             output = output + "</ClientList>\r\n";
