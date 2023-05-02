@@ -24,7 +24,7 @@ public class Routing implements IRouting{
         //get("/fileTest", (req,res) -> getFile(res)); // testing purposes
         get("/ping", (req, res) -> "pong");     // testing purposes
         post("/update", (req, res) -> taskManager.updateClient(new StructuredRequest(req), res));   // recieves pings from clients to check for any requests
-        post("/ClientList", (req, res) -> taskManager.sendClientList(new StructuredRequest(req), res))
+        post("/client_list", (req, res) -> taskManager.sendClientList(new StructuredRequest(req), res));
        
         // get request > start new task > wait for other client to update > request directory structure > recieve dir > wait for first to update > send dir
         post("/update_directory/request", (req,res)-> taskManager.startNewTask(TaskType.directory, new StructuredRequest(req)));
