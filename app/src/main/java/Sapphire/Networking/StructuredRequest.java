@@ -15,13 +15,19 @@ public class StructuredRequest {
     public int targetID; // -1 if responding to the server
     public HashMap<String,String> extraDetails;
 
-    public StructuredRequest(Request req){
+    public StructuredRequest(Request req, String method){
         /* constructor for client requests over the network */
         // placing the headers to appropriate fields
-        authToken = req.headers("authToken");
-        taskID = Integer.getInteger(req.headers("taskID"));
-        targetID = Integer.getInteger(req.headers("targetID"));
-        
+        try{
+            authToken = req.headers("authToken");
+            taskID = Integer.parseInt(req.headers("taskID"));
+            targetID = Integer.parseInt(req.headers("targetID")); 
+            //System.out.println("auth = "+authToken+", task = "+taskID+", target = "+targetID);
+        }catch(Exception e){
+            System.out.println("Structured Request: "+e.getLocalizedMessage());
+        }
+        if(method.equals("GET")){return;}
+
         for(String regionName : getRegionNames(req.body())){
             // place the regions into the details to be indexed
             if(regionName.equals("File")){
