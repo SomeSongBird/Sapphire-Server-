@@ -1,5 +1,9 @@
 package Sapphire.Tasks;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import Sapphire.Networking.*;
 import spark.Response;
 
@@ -17,8 +21,15 @@ public abstract class Task{
     public Object getOutput(Response res){
         lastUpdate = System.currentTimeMillis();
         res.header("TaskID",id);
+        try{
+            PrintWriter writter = new PrintWriter(new BufferedOutputStream(res.raw().getOutputStream()));
+            writter.append(outputString).flush();
+            writter.close();
+        }catch(IOException ioe){
+            System.out.println("Error writing task output: "+ ioe.getMessage());
+            return null;
+        }
         delivered = true;
-        res.body(outputString);
         return null;
     }
 }

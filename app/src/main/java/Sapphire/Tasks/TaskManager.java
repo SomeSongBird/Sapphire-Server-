@@ -1,5 +1,7 @@
 package Sapphire.Tasks;
 
+import java.io.BufferedOutputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 
 import Sapphire.Auth.IAuthorizor;
@@ -102,13 +104,17 @@ public class TaskManager implements ITaskManager {
             //log failed attempt
             halt(401,"Unauthorized Access");
         }
-        res.header("TaskID",-1);
-        for(Task task: activeTasks){
-            if(task.nextClientID==req.clientID){
-                return task.getOutput(res);
+        try{
+            res.header("taskID", "-1");
+            for(Task task: activeTasks){
+                if(task.nextClientID==req.clientID){
+                    task.getOutput(res);
+                }
             }
+        }catch(Exception e){
+            System.out.println("updateClientError: "+e.getMessage());
         }
-        return "";
+        return null;
     }
 
     public boolean updateTasks(StructuredRequest req){
@@ -129,9 +135,11 @@ public class TaskManager implements ITaskManager {
     }
 
     public Object sendClientList(StructuredRequest req, Response res){
-        String output = "<ClientList>";
+        String output = "None";
         try{
             req.clientID = auth.checkAuth(req.authToken);
+            res.header("taskID", "-1");
+            output = "<ClientList>";
             HashMap<Integer,String> clientList = auth.showAllDevices();
             for(int i : clientList.keySet()){
                 if(i!=req.clientID){
@@ -143,11 +151,13 @@ public class TaskManager implements ITaskManager {
             }
             output = output + "</ClientList>\r\n";
 
-            res.body(output);
+            PrintWriter writter = new PrintWriter(new BufferedOutputStream(res.raw().getOutputStream()));
+            writter.append(output).flush();
+            writter.close();
         }catch(Exception e){
             halt(401,"Unauthorized Access");
         }
-        return "";
+        return null;
     }
     
     //#endregion updates
