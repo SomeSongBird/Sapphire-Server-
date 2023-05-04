@@ -38,7 +38,8 @@ public class Authorizor implements IAuthorizor{
             stmt.setString(2, authToken);
             stmt.execute();
 
-            stmt = conn.prepareCall("SELECT ID FROM "+tableName+" WHERE Name=1;");
+            stmt = conn.prepareCall("SELECT ID FROM "+tableName+" WHERE Name=?;");
+            stmt.setString(1,deviceName);
             stmt.execute();
             if(stmt.getResultSet().next()){
                 return true;
