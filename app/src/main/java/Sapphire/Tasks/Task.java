@@ -14,7 +14,7 @@ public abstract class Task{
     int firstClientID;  // the id of the client that started the task
     Step step;
     boolean delivered;
-    String outputString;
+    String outputString = "";
     public abstract void executeStage(StructuredRequest r);
     public abstract void stopTask();
     

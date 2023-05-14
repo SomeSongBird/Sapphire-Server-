@@ -12,11 +12,11 @@ public class Authorizor implements IAuthorizor{
     String dbURL;
     
     private Connection conn;
-    public Authorizor(StringReader sr){
+    public Authorizor(){
         tableName = "Devices";
-        dbUsername = sr.getString("dbUsername");
-        dbPassword = sr.getString("dbPassword");
-        dbURL = sr.getString("dbURL");
+        dbUsername = StringReader.getString("dbUsername");
+        dbPassword = StringReader.getString("dbPassword");
+        dbURL = StringReader.getString("dbURL");
 
         try{
             conn = connect();

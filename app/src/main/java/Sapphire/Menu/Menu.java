@@ -6,7 +6,6 @@ import java.util.Scanner;
 import Sapphire.Tasks.ITaskManager;
 import Sapphire.Auth.IAuthorizor;
 import Sapphire.Logging.ILogger;
-import Sapphire.*;
 //#endregion imports
 
 public class Menu implements Runnable{
@@ -17,11 +16,11 @@ public class Menu implements Runnable{
     IAuthorizor authorizor;
     ILogger logger;
     MenuMiniClient mc;
-    public Menu(ITaskManager tm,IAuthorizor auth,ILogger log, StringReader sr){
+    public Menu(ITaskManager tm,IAuthorizor auth,ILogger log){
         taskManager = tm;
         authorizor = auth;
         logger = log;
-        mc = new MenuMiniClient(tm,sr);
+        mc = new MenuMiniClient(tm);
     }
 
     public void run(){

@@ -6,11 +6,10 @@ import static spark.Spark.halt;
 import java.io.*;
 import java.nio.file.Files;
 
-/* region names used:
- * final_path, requested_file_path, file_location, confirmation, File */
 
 public class TaskFileTransfer extends Task{
     String final_path = "";
+    String temporaryFile = "";
     public TaskFileTransfer(int id, StructuredRequest r){
         lastUpdate = System.currentTimeMillis();
         this.id = id;
@@ -19,29 +18,32 @@ public class TaskFileTransfer extends Task{
 
         // if there's a file, send and confirm
         // else recieve and respond
-        if(r.extraDetails.get("file_location") == null){
+        if(r.extraDetails.get("temporary_file_location") != null){
             step = Step.sending;
         }else step = Step.requesting;
     }
 
     public void executeStage(StructuredRequest r){
+        System.out.println("Executing Stage "+step);
         lastUpdate = System.currentTimeMillis();
         delivered = false;
         outputString = "<Task>FileTransfer</Task>\r\n";
         switch(step){
             case requesting: 
                 nextClientID = r.targetID;
-                outputString += "<requested_file_path>"+r.extraDetails.get("requested_file_path")+"</requested_file_path>\r\n";
+                final_path = r.extraDetails.get("file_path");
+                outputString += "<requested_file_path>"+r.extraDetails.get("file_location")+"</requested_file_path>\r\n";
                 step = Step.responding;
                 return;
             case sending:
                 nextClientID = r.targetID;
-                outputString += r.extraDetails.get("file_location");
+                final_path = r.extraDetails.get("final_path");
+                temporaryFile = r.extraDetails.get("temporary_file_location");
                 step = Step.confirming;
                 return;
             case responding:
                 nextClientID = this.firstClientID;
-                outputString += r.extraDetails.get("file_location");
+                temporaryFile = r.extraDetails.get("temporary_file_location");
                 step = Step.closing;
                 return;
             case confirming:
@@ -55,32 +57,44 @@ public class TaskFileTransfer extends Task{
     }
     
     public Object getOutput(Response res){
-        if((step==Step.closing || step==Step.confirming) && !(outputString=="<Task>FileTransfer</Task>\r\n"+"<confirmation>"+final_path+"</confirmation>\r\n")){
+        if((step==Step.closing || step==Step.confirming) && !(outputString=="<Task>FileTransfer</Task>\r\n<confirmation>"+final_path+"</confirmation>\r\n")){
             // if it's the final step and the output isn't just confirmation
-            delivered = true;
             // header stuff
-            File file = new File(outputString);
-            res.header("TaskID", id);
+            File file = null;
+            try {
+                System.out.println("os: "+temporaryFile);
+                file = new File(temporaryFile);
+                System.out.println("file: "+file.getName());
+                if(!file.exists()){
+                    System.out.println("temporary file not found | "+ id);
+                    return "temporary file not found | "+ id;
+                }
+                res.header("taskID", id);
+            } catch (Exception e) {
+                System.out.println("Trying to find it: "+e.getMessage());    
+            }
             
-            try(OutputStream bos = new BufferedOutputStream(res.raw().getOutputStream());
+            try{
+                OutputStream bos = new BufferedOutputStream(res.raw().getOutputStream());
                 PrintWriter writer = new PrintWriter(bos);
-            ){
                 writer.append("<final_path>"+final_path+"</final_path>\r\n").flush();
                 
                 writer.append("<File>").flush();
                 Files.copy(file.toPath(),bos);
                 bos.flush();
                 writer.append("</File>\r\n").flush();
-
+                
                 //close everything
                 writer.close();
                 bos.close();
                 file.delete();
+                delivered = true;
             }catch(IOException ioe){
                 halt(405,"server error");
             }
             return null;
         }
+        System.out.println("super output");
         return super.getOutput(res);
     }
 

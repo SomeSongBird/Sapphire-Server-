@@ -19,6 +19,7 @@ public class StructuredRequest {
         /* constructor for client requests over the network */
         // placing the headers to appropriate fields
         try{
+            extraDetails = new HashMap<String,String>();
             authToken = req.headers("authToken");
             taskID = Integer.parseInt(req.headers("taskID"));
             targetID = Integer.parseInt(req.headers("targetID")); 
@@ -28,13 +29,17 @@ public class StructuredRequest {
         }
         if(method.equals("GET")){return;}
 
-        for(String regionName : getRegionNames(req.body())){
+        String[] regions = getRegionNames(req.body());
+        for(String regionName : regions){
+            System.out.println("SReq: "+regionName);
             // place the regions into the details to be indexed
             if(regionName.equals("File")){
+                System.out.println("Storing temporary file");
                 // files are stored in a temporary file and what's stored is the file location
-                extraDetails.put("file_location","/temporary/"+(fileID++)+".tmp");
-                File temp_file = new File(extraDetails.get("file_location"));
+                extraDetails.put("temporary_file_location",Sapphire.StringReader.getString("temporaryFilePath")+(fileID++)+".tmp");
+                File temp_file = new File(extraDetails.get("temporary_file_location"));
                 try{
+                    temp_file.createNewFile();
                     BufferedInputStream bufferedInputStream = new BufferedInputStream(req.raw().getInputStream());
                     BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(temp_file));
 
@@ -67,7 +72,9 @@ public class StructuredRequest {
                     bufferedOutputStream.close();
                     bufferedInputStream.close();
                 } //the file will not exist but java will yell at me if the errors aren't handled
-                catch(Exception e){}
+                catch(Exception e){
+                    System.out.println("Structured Request: "+e);
+                }
             }else{
                 extraDetails.put(regionName, findRegionBody(req.body(),regionName));
             }
@@ -92,6 +99,7 @@ public class StructuredRequest {
 
     //#region helpers
     private String[] getRegionNames(String input){
+        //System.out.println("input: "+input);
         String[] regionNames = new String[0];
         // placing the body into a usable form based on the regions they're in
         Pattern regionPattern = Pattern.compile("<(.)*>(.)*<\\/(.)*>");
@@ -100,8 +108,10 @@ public class StructuredRequest {
         // find a full region
         while(matcher.find()){
             String region = input.substring(matcher.start(),matcher.end()); // get a string of just that region
-            String regionName = region.substring(region.indexOf("<")+1,region.indexOf(">")-1); 
-            append(regionNames,regionName);
+            //System.out.println("region:\n"+region);
+            String regionName = region.substring(region.indexOf("<")+1,region.indexOf(">")); 
+            //System.out.println("regionName: "+regionName);
+            regionNames = append(regionNames,regionName);
         }
         return regionNames;
     }
@@ -114,7 +124,7 @@ public class StructuredRequest {
     }
 
     private String findRegionBody(String input, String regionName){
-        Pattern regionPattern = Pattern.compile("<"+regionName+">.*<\\/"+regionName+">");
+        Pattern regionPattern = Pattern.compile("<"+regionName+">(.)*<\\/"+regionName+">");
         Matcher matcher = regionPattern.matcher(input);
         // find a full region
         if(matcher.find()){

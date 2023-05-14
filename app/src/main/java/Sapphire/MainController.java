@@ -26,10 +26,10 @@ public class MainController {
         }
 
         log = new Logger();
-        auth = new Authorizor(sr);
+        auth = new Authorizor();
         task = new TaskManager(auth,log);
         rout = new Routing(task);
-        menu = new Menu(task,auth,log,sr);
+        menu = new Menu(task,auth,log);
         
         rout.startRouting();
         return true;

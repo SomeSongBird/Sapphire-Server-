@@ -17,12 +17,12 @@ public class TaskDirectory extends Task {
 
     public void executeStage(StructuredRequest r){
         lastUpdate = System.currentTimeMillis();
-        nextClientID = r.targetID;
         delivered = false;
         outputString = "<Task>Directory</Task>\r\n";
         switch(step){
             // get request > start new task > wait for other client to update > request directory structure > recieve dir > wait for first to update > send dir
             case requesting:
+                nextClientID = r.targetID;
                 outputString += "<directory_request>directory_request</directory_request>\r\n"; // extraDetails[0] will be the path of the dir to branch down from
                 step = Step.responding;
                 return;

@@ -19,12 +19,12 @@ public class MenuMiniClient implements Runnable{
     ITaskManager taskManager;
     String[] authorizedDirectories;
 
-    public MenuMiniClient(ITaskManager tm, Sapphire.StringReader sr){
+    public MenuMiniClient(ITaskManager tm){
         // read authToken
-        authToken = sr.getString("MainMenuAuthToken");
-        temporaryFilePath = sr.getString("temporaryFilePath");
+        authToken = Sapphire.StringReader.getString("MainMenuAuthToken");
+        temporaryFilePath = Sapphire.StringReader.getString("temporaryFilePath");
         this.taskManager = tm;
-        authorizedDirectories = new String[]{sr.getString("DefaultAuthorizedDirectories")};
+        authorizedDirectories = new String[]{Sapphire.StringReader.getString("DefaultAuthorizedDirectories")};
     }
     public void run(){
         while(!shutdown){
@@ -207,7 +207,7 @@ public class MenuMiniClient implements Runnable{
         rb.addRegion("final_path", destinationPath);
         rb.addRegion("file_location", pathToFile);
         StructuredRequest sr = new StructuredRequest(0,-1,destinationID,rb.build());
-        int taskID = taskManager.startNewTask(TaskType.fileTransfer, sr);
+        taskManager.startNewTask(TaskType.fileTransfer, sr,null);
     }
     
     public void pullFile(int targetID, String filePath, String finalPath){
@@ -215,14 +215,14 @@ public class MenuMiniClient implements Runnable{
         rb.addRegion("file_location", filePath);
         rb.addRegion("file_path", finalPath);
         StructuredRequest sr = new StructuredRequest(0,-1,targetID,rb.build());
-        int taskID = taskManager.startNewTask(TaskType.fileTransfer, sr);
+        taskManager.startNewTask(TaskType.fileTransfer, sr,null);
     }
 
     public void startApp(int targetID, String appName){
         RequestBuilder rb = new RequestBuilder();
         rb.addRegion("app_name", appName);
         StructuredRequest sr = new StructuredRequest(0,-1,targetID,rb.build());
-        int taskID = taskManager.startNewTask(TaskType.remoteStart, sr);
+        taskManager.startNewTask(TaskType.remoteStart, sr,null);
     }
 
     //#endregion taskManagement

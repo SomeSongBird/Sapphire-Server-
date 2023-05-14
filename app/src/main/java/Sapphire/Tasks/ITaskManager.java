@@ -5,7 +5,7 @@ import Sapphire.Tasks.Enums.TaskType;
 import spark.Response;
 
 public interface ITaskManager{
-    public int startNewTask(TaskType type, StructuredRequest r);
+    public int startNewTask(TaskType type, StructuredRequest r,Response res);
 
     public void timeoutTask(long currentTime);
     public boolean updateTasks(StructuredRequest req);

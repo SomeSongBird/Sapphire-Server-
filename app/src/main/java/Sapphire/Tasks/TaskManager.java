@@ -30,6 +30,7 @@ public class TaskManager implements ITaskManager {
     
     //#region taskManagement
     private void addNewTask(Task t){
+        System.out.println("Started task "+t.id);
         int newlength = activeTasks.length+1;
         Task[] updatedActiveTasks = new Task[newlength];
         for(int i=0;i<activeTasks.length;i++){
@@ -41,6 +42,7 @@ public class TaskManager implements ITaskManager {
     }
 
     private void removeTask(Task t) throws Exception{
+        System.out.println("Removed Task "+t.id);
         int newlength = activeTasks.length-1;
         Task[] updatedActiveTasks = new Task[newlength];
         int index = 0;
@@ -52,9 +54,10 @@ public class TaskManager implements ITaskManager {
         if(index!=newlength){
             throw new Exception("Missing elements in task array");
         }
+        activeTasks = updatedActiveTasks;
     }
 
-    public int startNewTask(TaskType type, StructuredRequest req){
+    public int startNewTask(TaskType type, StructuredRequest req, Response res){
         try{
             req.clientID = auth.checkAuth(req.authToken);
         }catch(Exception e){
@@ -62,24 +65,35 @@ public class TaskManager implements ITaskManager {
             halt(401,"Unauthorized Access");
             return -1;
         }
-        Task t;
-        switch(type){
-            case fileTransfer:
-                t = new TaskFileTransfer(nextTaskID++, req);
-                break;
-            case directory:
+        Task t = null;
+        try{
+            switch(type){
+                case fileTransfer:
+                    //System.out.println("fileTransfer");
+                    t = new TaskFileTransfer(nextTaskID++, req);
+                    break;
+                case directory:
+                //System.out.println("directory");
                 t = new TaskDirectory(nextTaskID++, req);
                 break;
-            case remoteStart:
+                case remoteStart:
                 t = new TaskRemoteStart(nextTaskID++, req);
                 break;
-            case updateConnection: //not used, currently set to an error case
+                case updateConnection: //not used, currently set to an error case
                 return -1;
                 //break;
-            default: return -1; // error case
+                default: return -1; // error case
+            }
+            //System.out.println("add");
+            addNewTask(t);
+            //System.out.println("execute");
+            t.executeStage(req);
+        }catch(Exception e){
+            System.out.println("TaskStart error: "+e.getMessage());
         }
-        addNewTask(t);
-        t.executeStage(req);
+        if(res!=null){
+            res.header("taskID", t.id);
+        }
         return t.id;
     }
 
@@ -108,13 +122,16 @@ public class TaskManager implements ITaskManager {
             res.header("taskID", "-1");
             for(Task task: activeTasks){
                 if(task.nextClientID==req.clientID){
+                    System.out.println("client :"+req.clientID);
+                    System.out.println("task found");
                     task.getOutput(res);
+                    return null;
                 }
             }
         }catch(Exception e){
             System.out.println("updateClientError: "+e.getMessage());
         }
-        return null;
+        return "None";
     }
 
     public boolean updateTasks(StructuredRequest req){
