@@ -28,16 +28,16 @@ public class Routing implements IRouting{
        
         // get request > start new task > wait for other client to update > request directory structure > recieve dir > wait for first to update > send dir
         post("/update_directory/request", (req,res)-> taskManager.startNewTask(TaskType.directory, new StructuredRequest(req,"POST"),res));
-        post("/update_directory/compliance", (req,res)-> taskManager.updateTasks(new StructuredRequest(req,"POST")));
+        post("/update_directory/compliance", (req,res)-> taskManager.updateTasks(new StructuredRequest(req,"POST"),res));
 
         // get request > start new task > wait for other client to update > send requested file name > wait for other client to return location of file > wait for first client to update > send file location to first client
         post("/remote_start/request", (req,res)-> taskManager.startNewTask(TaskType.remoteStart, new StructuredRequest(req,"POST"),res));
-        post("/remote_start/compliance", (req,res)-> taskManager.updateTasks(new StructuredRequest(req,"POST")));
+        post("/remote_start/compliance", (req,res)-> taskManager.updateTasks(new StructuredRequest(req,"POST"),res));
         // get request > start new task > wait for other client to update 
         // (if no file included) > request file from that client > recieve file > store file localy > wait for first client to update > send file to first client
         // (if file included) > recieve file > store file localy > wait for other client to update > send file to other client
         post("/file_transfer/request",(req,res)-> taskManager.startNewTask(TaskType.fileTransfer, new StructuredRequest(req,"POST"),res));  
-        post("/file_transfer/compliance",(req,res)-> taskManager.updateTasks(new StructuredRequest(req,"POST")));
+        post("/file_transfer/compliance",(req,res)-> taskManager.updateTasks(new StructuredRequest(req,"POST"),res));
     }
 
     public void stopRouting(){
