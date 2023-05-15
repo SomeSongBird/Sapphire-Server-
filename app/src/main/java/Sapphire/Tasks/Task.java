@@ -9,9 +9,9 @@ import spark.Response;
 
 public abstract class Task{
     long lastUpdate;  // to help put a maximum durration on a task
-    int id;
-    int nextClientID;   // the next client that will be contacted
-    int firstClientID;  // the id of the client that started the task
+    int id = -1;
+    int nextClientID = -1;   // the next client that will be contacted
+    int firstClientID = -1;  // the id of the client that started the task
     Step step;
     boolean delivered;
     String outputString = "";
@@ -19,15 +19,17 @@ public abstract class Task{
     public abstract void stopTask();
     
     public Object getOutput(Response res){
-        lastUpdate = System.currentTimeMillis();
-        res.header("TaskID",id);
+        
         try{
+            lastUpdate = System.currentTimeMillis();
             PrintWriter writter = new PrintWriter(new BufferedOutputStream(res.raw().getOutputStream()));
             writter.append(outputString).flush();
             writter.close();
-        }catch(IOException ioe){
-            System.out.println("Error writing task output: "+ ioe.getMessage());
+        }catch(IOException e){
+            System.out.println("Error writing task output: "+ e.getMessage());
             return null;
+        }catch(Exception e2){
+            System.out.println("idk man lol "+e2.getLocalizedMessage());
         }
         delivered = true;
         return null;

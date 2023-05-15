@@ -28,56 +28,62 @@ public class StructuredRequest {
             System.out.println("Structured Request: "+e.getLocalizedMessage());
         }
         if(method.equals("GET")){return;}
-
-        String[] regions = getRegionNames(req.body());
-        for(String regionName : regions){
-            System.out.println("SReq: "+regionName);
-            // place the regions into the details to be indexed
-            if(regionName.equals("File")){
-                System.out.println("Storing temporary file");
-                // files are stored in a temporary file and what's stored is the file location
-                extraDetails.put("temporary_file_location",Sapphire.StringReader.getString("temporaryFilePath")+(fileID++)+".tmp");
-                File temp_file = new File(extraDetails.get("temporary_file_location"));
-                try{
-                    temp_file.createNewFile();
-                    BufferedInputStream bufferedInputStream = new BufferedInputStream(req.raw().getInputStream());
-                    BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(temp_file));
-
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    boolean started=false,ended=false;
-                    while(((len=bufferedInputStream.read(buffer))>0)&&(!ended)){ //process the bytes in chunks so only the file portion get placed into the file
-                        int[] regionbounds = getFileBounds(buffer);
-                        if(!started){
-                            if(regionbounds[0]!=-1){
-                                started = true;
-                                if(regionbounds[1]==-1){
-                                    regionbounds[1] = len;
+        
+        try{
+            //System.out.println(req.body());
+            String[] regions = getRegionNames(req.body());
+            System.out.println("regions length = "+regions.length);
+            for(String regionName : regions){
+                System.out.println("SReq: "+regionName);
+                // place the regions into the details to be indexed
+                if(regionName.equals("File")){
+                    System.out.println("Storing temporary file");
+                    // files are stored in a temporary file and what's stored is the file location
+                    extraDetails.put("temporary_file_location",Sapphire.StringReader.getString("temporaryFilePath")+(fileID++)+".tmp");
+                    File temp_file = new File(extraDetails.get("temporary_file_location"));
+                    try{
+                        temp_file.createNewFile();
+                        BufferedInputStream bufferedInputStream = new BufferedInputStream(req.raw().getInputStream());
+                        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(temp_file));
+    
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        boolean started=false,ended=false;
+                        while(((len=bufferedInputStream.read(buffer))>0)&&(!ended)){ //process the bytes in chunks so only the file portion get placed into the file
+                            int[] regionbounds = getFileBounds(buffer);
+                            if(!started){
+                                if(regionbounds[0]!=-1){
+                                    started = true;
+                                    if(regionbounds[1]==-1){
+                                        regionbounds[1] = len;
+                                    }
+                                    byte[] tmp = Arrays.copyOfRange(buffer, regionbounds[0], regionbounds[1]);
+                                    bufferedOutputStream.write(tmp,0,tmp.length);
                                 }
-                                byte[] tmp = Arrays.copyOfRange(buffer, regionbounds[0], regionbounds[1]);
+                            }else{
+                                if(regionbounds[1]==-1){
+                                    regionbounds[1]=len;
+                                }else{
+                                    ended=true;
+                                }
+                                byte[] tmp = Arrays.copyOfRange(buffer, 0, regionbounds[1]);
                                 bufferedOutputStream.write(tmp,0,tmp.length);
                             }
-                        }else{
-                            if(regionbounds[1]==-1){
-                                regionbounds[1]=len;
-                            }else{
-                                ended=true;
-                            }
-                            byte[] tmp = Arrays.copyOfRange(buffer, 0, regionbounds[1]);
-                            bufferedOutputStream.write(tmp,0,tmp.length);
                         }
+    
+                        bufferedOutputStream.flush();
+                        bufferedOutputStream.close();
+                        bufferedInputStream.close();
+                    } //the file will not exist but java will yell at me if the errors aren't handled
+                    catch(Exception e){
+                        System.out.println("Structured Request: "+e.getMessage());
                     }
-
-                    bufferedOutputStream.flush();
-                    bufferedOutputStream.close();
-                    bufferedInputStream.close();
-                } //the file will not exist but java will yell at me if the errors aren't handled
-                catch(Exception e){
-                    System.out.println("Structured Request: "+e);
+                }else{
+                    extraDetails.put(regionName, findRegionBody(req.body(),regionName));
                 }
-            }else{
-                extraDetails.put(regionName, findRegionBody(req.body(),regionName));
             }
+        }catch(Exception e){
+            System.out.println("Structured Request Error: "+e.getMessage());
         }
     }
     
@@ -99,21 +105,38 @@ public class StructuredRequest {
 
     //#region helpers
     private String[] getRegionNames(String input){
-        //System.out.println("input: "+input);
+        System.out.println("input: "+input);
         String[] regionNames = new String[0];
         // placing the body into a usable form based on the regions they're in
-        Pattern regionPattern = Pattern.compile("<(.)*>(.)*<\\/(.)*>");
-        Matcher matcher = regionPattern.matcher(input);
-        
-        // find a full region
-        while(matcher.find()){
-            String region = input.substring(matcher.start(),matcher.end()); // get a string of just that region
-            //System.out.println("region:\n"+region);
-            String regionName = region.substring(region.indexOf("<")+1,region.indexOf(">")); 
-            //System.out.println("regionName: "+regionName);
-            regionNames = append(regionNames,regionName);
+        try {
+            Pattern regionPattern = Pattern.compile("<([^>]*)>");
+            Matcher matcher = regionPattern.matcher(input);
+
+            while(matcher.find()){
+                String name = input.substring(matcher.start()+1, matcher.end()-1);
+                Pattern closingPattern = Pattern.compile("<\\/"+name+">");
+                Matcher secondary = closingPattern.matcher(input);
+                if(secondary.find(matcher.end())){
+                    System.out.println("regionName: "+name);
+                    regionNames = append(regionNames,name);
+                }
+            }
+            /* Pattern regionPattern = Pattern.compile("<(.*)>(.|\\n)*<\\/\\1>");
+            Matcher matcher = regionPattern.matcher(input);
+            // find a full region
+            while(matcher.find()){
+                System.out.println("match found");
+                String region = input.substring(matcher.start(),matcher.end()); // get a string of just that region
+                //System.out.println("region:\n"+region);
+                String regionName = region.substring(region.indexOf("<")+1,region.indexOf(">")); 
+                //System.out.println("regionName: "+regionName);
+                regionNames = append(regionNames,regionName);
+            } */
+            return regionNames;
+        } catch (Exception e) {
+            System.out.println("Error getting Names: "+e.getMessage());
+            return null;
         }
-        return regionNames;
     }
 
     private String[] append(String[] arr,String str){
@@ -124,7 +147,23 @@ public class StructuredRequest {
     }
 
     private String findRegionBody(String input, String regionName){
-        Pattern regionPattern = Pattern.compile("<"+regionName+">(.)*<\\/"+regionName+">");
+        Pattern startPattern = Pattern.compile("<"+regionName+">");
+        Pattern endPattern = Pattern.compile("<\\/"+regionName+">");
+        Matcher startMatcher = startPattern.matcher(input);
+        Matcher endMatcher = endPattern.matcher(input);
+        // find a full region
+        if(startMatcher.find()){
+            int start = startMatcher.end();
+            endMatcher.find();
+            int end = endMatcher.start();
+            String body = input.substring(start,end);
+            //System.out.println(body);
+            return body;
+        }else{
+            return "error";
+        }
+        
+        /* Pattern regionPattern = Pattern.compile("<"+regionName+">(.|\\n)*<\\/"+regionName+">");
         Matcher matcher = regionPattern.matcher(input);
         // find a full region
         if(matcher.find()){
@@ -135,10 +174,12 @@ public class StructuredRequest {
             int start = mat.end();
             mat.find();
             int end = mat.start();
-            return region.substring(start,end);
+            String regionBody = region.substring(start,end);
+            System.out.println(regionBody);
+            return regionBody;
         }else{
             return "error";
-        }
+        } */
     }
 
     private int[] getFileBounds(byte[] input){

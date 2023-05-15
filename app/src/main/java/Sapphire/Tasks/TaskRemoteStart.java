@@ -9,7 +9,7 @@ public class TaskRemoteStart extends Task {
 
     public void executeStage(StructuredRequest r){
         lastUpdate = System.currentTimeMillis();
-        outputString = "<Task>RemoteStart</Task>\r\n";
+        outputString = "<Task>\r\nRemoteStart\r\n</Task>\r\n";
         switch(step){
             
             default:

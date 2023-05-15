@@ -111,7 +111,7 @@ public class TaskManager implements ITaskManager {
     //#endregion taskManagement
 
     //#region updates
-    public Object updateClient(StructuredRequest req,Response res){
+    public Object updateClient(StructuredRequest req, Response res){
         try{
             req.clientID = auth.checkAuth(req.authToken);
         }catch(Exception e){
@@ -120,11 +120,13 @@ public class TaskManager implements ITaskManager {
         }
         try{
             res.header("taskID", "-1");
-            for(Task task: activeTasks){
+            for(int i=0;i<activeTasks.length;i++){
+                Task task = activeTasks[i];
                 if(task.nextClientID==req.clientID){
-                    System.out.println("client :"+req.clientID);
-                    System.out.println("task found");
+                    res.header("taskID",String.valueOf(task.id));
+                    System.out.println("Update Client :"+req.clientID);
                     task.getOutput(res);
+                    //System.out.println("what");
                     return null;
                 }
             }
@@ -134,7 +136,7 @@ public class TaskManager implements ITaskManager {
         return "None";
     }
 
-    public boolean updateTasks(StructuredRequest req){
+    public boolean updateTasks(StructuredRequest req, Response res){
         try{
             req.clientID = auth.checkAuth(req.authToken);
         }catch(Exception e){
@@ -142,11 +144,19 @@ public class TaskManager implements ITaskManager {
             halt(401,"Unauthorized Access");
             return false;
         }
-        for(Task task: activeTasks){
-            if(task.id==req.taskID){
-                task.executeStage(req);
-                return true;
+        try{
+            System.out.println("Update Tasks");
+            for(int i=0;i<activeTasks.length;i++){
+                Task task = activeTasks[i];
+                if(task.id==req.taskID){
+                    System.out.println("Update Tasks ClientID :"+req.clientID);
+                    res.header("taskID",String.valueOf(task.id));
+                    task.executeStage(req);
+                    return true;
+                }
             }
+        }catch(Exception e){
+            System.out.println("Update Tasks Error: "+e.getMessage());
         }
         return false;
     }
@@ -156,17 +166,17 @@ public class TaskManager implements ITaskManager {
         try{
             req.clientID = auth.checkAuth(req.authToken);
             res.header("taskID", "-1");
-            output = "<ClientList>";
+            output = "<ClientList>\r\n";
             HashMap<Integer,String> clientList = auth.showAllDevices();
             for(int i : clientList.keySet()){
                 if(i!=req.clientID){
-                    if(!output.equals("<ClientList>")){
+                    if(!output.equals("<ClientList>\r\n")){
                         output = output+":";
                     }
                     output = output + i+","+clientList.get(i);
                 }
             }
-            output = output + "</ClientList>\r\n";
+            output += "\r\n</ClientList>\r\n";
 
             PrintWriter writter = new PrintWriter(new BufferedOutputStream(res.raw().getOutputStream()));
             writter.append(output).flush();
@@ -180,8 +190,9 @@ public class TaskManager implements ITaskManager {
     //#endregion updates
 
     public void shutdownSequence(){
-        for(Task t:activeTasks){
-            t.stopTask();
+        for(int i=0;i<activeTasks.length;i++){
+            Task task = activeTasks[i];
+            task.stopTask();
         }
     }
 }

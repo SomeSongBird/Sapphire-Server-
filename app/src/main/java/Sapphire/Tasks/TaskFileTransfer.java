@@ -27,12 +27,12 @@ public class TaskFileTransfer extends Task{
         System.out.println("Executing Stage "+step);
         lastUpdate = System.currentTimeMillis();
         delivered = false;
-        outputString = "<Task>FileTransfer</Task>\r\n";
+        outputString = "<Task>\r\nFileTransfer\r\n</Task>\r\n";
         switch(step){
             case requesting: 
                 nextClientID = r.targetID;
                 final_path = r.extraDetails.get("file_path");
-                outputString += "<requested_file_path>"+r.extraDetails.get("file_location")+"</requested_file_path>\r\n";
+                outputString += "<requested_file_path>\r\n"+r.extraDetails.get("file_location")+"\r\n</requested_file_path>\r\n";
                 step = Step.responding;
                 return;
             case sending:
@@ -48,7 +48,7 @@ public class TaskFileTransfer extends Task{
                 return;
             case confirming:
                 nextClientID = this.firstClientID;
-                outputString += "<confirmation>"+final_path+"</confirmation>\r\n";
+                outputString += "<confirmation>\r\n"+final_path+"\r\n</confirmation>\r\n";
                 step = Step.closing;
                 return;
             default:
@@ -57,7 +57,7 @@ public class TaskFileTransfer extends Task{
     }
     
     public Object getOutput(Response res){
-        if((step==Step.closing || step==Step.confirming) && !(outputString=="<Task>FileTransfer</Task>\r\n<confirmation>"+final_path+"</confirmation>\r\n")){
+        if((step==Step.closing || step==Step.confirming) && !(outputString=="<Task>\r\nFileTransfer\r\n</Task>\r\n<confirmation>\r\n"+final_path+"\r\n</confirmation>\r\n")){
             // if it's the final step and the output isn't just confirmation
             // header stuff
             File file = null;
@@ -69,7 +69,6 @@ public class TaskFileTransfer extends Task{
                     System.out.println("temporary file not found | "+ id);
                     return "temporary file not found | "+ id;
                 }
-                res.header("taskID", id);
             } catch (Exception e) {
                 System.out.println("Trying to find it: "+e.getMessage());    
             }
@@ -77,12 +76,12 @@ public class TaskFileTransfer extends Task{
             try{
                 OutputStream bos = new BufferedOutputStream(res.raw().getOutputStream());
                 PrintWriter writer = new PrintWriter(bos);
-                writer.append("<final_path>"+final_path+"</final_path>\r\n").flush();
+                writer.append("<final_path>\r\n"+final_path+"\r\n</final_path>\r\n").flush();
                 
-                writer.append("<File>").flush();
+                writer.append("<File>\r\n").flush();
                 Files.copy(file.toPath(),bos);
                 bos.flush();
-                writer.append("</File>\r\n").flush();
+                writer.append("\r\n</File>\r\n").flush();
                 
                 //close everything
                 writer.close();
