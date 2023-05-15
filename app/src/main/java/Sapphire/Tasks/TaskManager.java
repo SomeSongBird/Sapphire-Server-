@@ -30,7 +30,6 @@ public class TaskManager implements ITaskManager {
     
     //#region taskManagement
     private void addNewTask(Task t){
-        System.out.println("Started task "+t.id);
         int newlength = activeTasks.length+1;
         Task[] updatedActiveTasks = new Task[newlength];
         for(int i=0;i<activeTasks.length;i++){
@@ -42,7 +41,6 @@ public class TaskManager implements ITaskManager {
     }
 
     private void removeTask(Task t) throws Exception{
-        System.out.println("Removed Task "+t.id);
         int newlength = activeTasks.length-1;
         Task[] updatedActiveTasks = new Task[newlength];
         int index = 0;
@@ -122,9 +120,8 @@ public class TaskManager implements ITaskManager {
             res.header("taskID", "-1");
             for(int i=0;i<activeTasks.length;i++){
                 Task task = activeTasks[i];
-                if(task.nextClientID==req.clientID){
+                if(task.nextClientID==req.clientID&&!task.delivered){
                     res.header("taskID",String.valueOf(task.id));
-                    System.out.println("Update Client :"+req.clientID);
                     task.getOutput(res);
                     //System.out.println("what");
                     return null;
@@ -145,11 +142,9 @@ public class TaskManager implements ITaskManager {
             return false;
         }
         try{
-            System.out.println("Update Tasks");
             for(int i=0;i<activeTasks.length;i++){
                 Task task = activeTasks[i];
                 if(task.id==req.taskID){
-                    System.out.println("Update Tasks ClientID :"+req.clientID);
                     res.header("taskID",String.valueOf(task.id));
                     task.executeStage(req);
                     return true;

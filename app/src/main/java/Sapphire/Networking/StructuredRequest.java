@@ -30,14 +30,10 @@ public class StructuredRequest {
         if(method.equals("GET")){return;}
         
         try{
-            //System.out.println(req.body());
             String[] regions = getRegionNames(req.body());
-            System.out.println("regions length = "+regions.length);
             for(String regionName : regions){
-                System.out.println("SReq: "+regionName);
                 // place the regions into the details to be indexed
                 if(regionName.equals("File")){
-                    System.out.println("Storing temporary file");
                     // files are stored in a temporary file and what's stored is the file location
                     extraDetails.put("temporary_file_location",Sapphire.StringReader.getString("temporaryFilePath")+(fileID++)+".tmp");
                     File temp_file = new File(extraDetails.get("temporary_file_location"));
@@ -57,8 +53,7 @@ public class StructuredRequest {
                                     if(regionbounds[1]==-1){
                                         regionbounds[1] = len;
                                     }
-                                    byte[] tmp = Arrays.copyOfRange(buffer, regionbounds[0], regionbounds[1]);
-                                    bufferedOutputStream.write(tmp,0,tmp.length);
+                                    bufferedOutputStream.write(buffer,regionbounds[0],regionbounds[1]-regionbounds[0]);
                                 }
                             }else{
                                 if(regionbounds[1]==-1){
@@ -105,7 +100,7 @@ public class StructuredRequest {
 
     //#region helpers
     private String[] getRegionNames(String input){
-        System.out.println("input: "+input);
+        //System.out.println("input: "+input);
         String[] regionNames = new String[0];
         // placing the body into a usable form based on the regions they're in
         try {
@@ -117,7 +112,6 @@ public class StructuredRequest {
                 Pattern closingPattern = Pattern.compile("<\\/"+name+">");
                 Matcher secondary = closingPattern.matcher(input);
                 if(secondary.find(matcher.end())){
-                    System.out.println("regionName: "+name);
                     regionNames = append(regionNames,name);
                 }
             }
@@ -183,8 +177,8 @@ public class StructuredRequest {
     }
 
     private int[] getFileBounds(byte[] input){
-        byte[] startRegionNameBytes = ("<File>").getBytes();
-        byte[] endRegionNameBytes = ("</File>").getBytes();
+        byte[] startRegionNameBytes = ("<File>\r\n").getBytes();
+        byte[] endRegionNameBytes = ("\r\n</File>").getBytes();
         int regionNameSize = startRegionNameBytes.length;
         int[] regionBounds = {-1,-1};
         for(int i=0;i<input.length;i++){

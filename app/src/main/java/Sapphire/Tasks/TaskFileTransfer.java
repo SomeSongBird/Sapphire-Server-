@@ -26,22 +26,24 @@ public class TaskFileTransfer extends Task{
     public void executeStage(StructuredRequest r){
         System.out.println("Executing Stage "+step);
         lastUpdate = System.currentTimeMillis();
-        delivered = false;
         outputString = "<Task>\r\nFileTransfer\r\n</Task>\r\n";
         switch(step){
             case requesting: 
+                delivered = false;
                 nextClientID = r.targetID;
-                final_path = r.extraDetails.get("file_path");
+                final_path = r.extraDetails.get("file_path").strip();
                 outputString += "<requested_file_path>\r\n"+r.extraDetails.get("file_location")+"\r\n</requested_file_path>\r\n";
                 step = Step.responding;
                 return;
             case sending:
+                delivered = false;
                 nextClientID = r.targetID;
-                final_path = r.extraDetails.get("final_path");
+                final_path = r.extraDetails.get("final_path").strip();
                 temporaryFile = r.extraDetails.get("temporary_file_location");
                 step = Step.confirming;
                 return;
             case responding:
+                delivered = false;
                 nextClientID = this.firstClientID;
                 temporaryFile = r.extraDetails.get("temporary_file_location");
                 step = Step.closing;
@@ -57,14 +59,12 @@ public class TaskFileTransfer extends Task{
     }
     
     public Object getOutput(Response res){
-        if((step==Step.closing || step==Step.confirming) && !(outputString=="<Task>\r\nFileTransfer\r\n</Task>\r\n<confirmation>\r\n"+final_path+"\r\n</confirmation>\r\n")){
+        if((step==Step.closing || step==Step.confirming) && !delivered){
             // if it's the final step and the output isn't just confirmation
             // header stuff
             File file = null;
             try {
-                System.out.println("os: "+temporaryFile);
                 file = new File(temporaryFile);
-                System.out.println("file: "+file.getName());
                 if(!file.exists()){
                     System.out.println("temporary file not found | "+ id);
                     return "temporary file not found | "+ id;
@@ -76,6 +76,7 @@ public class TaskFileTransfer extends Task{
             try{
                 OutputStream bos = new BufferedOutputStream(res.raw().getOutputStream());
                 PrintWriter writer = new PrintWriter(bos);
+                writer.append(outputString).flush();
                 writer.append("<final_path>\r\n"+final_path+"\r\n</final_path>\r\n").flush();
                 
                 writer.append("<File>\r\n").flush();
@@ -93,7 +94,6 @@ public class TaskFileTransfer extends Task{
             }
             return null;
         }
-        System.out.println("super output");
         return super.getOutput(res);
     }
 
