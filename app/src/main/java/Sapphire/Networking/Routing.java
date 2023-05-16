@@ -90,8 +90,8 @@ public class Routing implements IRouting{
             fis.close();
             zOut.close();
         }catch(IOException e){
-            System.err.println(e.getMessage());
-            return ("E: "+ e.getMessage());
+            System.err.println(e );
+            return ("E: "+ e );
         }
         
         return outputFileName;

@@ -134,7 +134,7 @@ public class MenuMiniClient implements Runnable{
 
             input.delete();
         }catch(IOException e){
-            System.err.println(e.getMessage());
+            System.err.println(e );
         }
     }
     //#endregion fileZippers

@@ -241,7 +241,7 @@ public class Menu implements Runnable{
         try{
             devices = authorizor.showAllDevices();
         }catch(Exception e){
-            System.err.println(e.getMessage());
+            System.err.println(e );
             waitForNextKeystroke();
             return;    
         }

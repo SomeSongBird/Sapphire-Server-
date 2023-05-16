@@ -87,7 +87,7 @@ public class TaskManager implements ITaskManager {
             //System.out.println("execute");
             t.executeStage(req);
         }catch(Exception e){
-            System.out.println("TaskStart error: "+e.getMessage());
+            System.out.println("TaskStart error: "+e );
         }
         if(res!=null){
             res.header("taskID", t.id);
@@ -128,7 +128,7 @@ public class TaskManager implements ITaskManager {
                 }
             }
         }catch(Exception e){
-            System.out.println("updateClientError: "+e.getMessage());
+            System.out.println("updateClientError: "+e );
         }
         return "None";
     }
@@ -151,7 +151,7 @@ public class TaskManager implements ITaskManager {
                 }
             }
         }catch(Exception e){
-            System.out.println("Update Tasks Error: "+e.getMessage());
+            System.out.println("Update Tasks Error: "+e );
         }
         return false;
     }

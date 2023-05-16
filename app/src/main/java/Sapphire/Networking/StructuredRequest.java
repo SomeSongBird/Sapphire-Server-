@@ -71,14 +71,14 @@ public class StructuredRequest {
                         bufferedInputStream.close();
                     } //the file will not exist but java will yell at me if the errors aren't handled
                     catch(Exception e){
-                        System.out.println("Structured Request: "+e.getMessage());
+                        System.out.println("Structured Request: "+e );
                     }
                 }else{
                     extraDetails.put(regionName, findRegionBody(req.body(),regionName));
                 }
             }
         }catch(Exception e){
-            System.out.println("Structured Request Error: "+e.getMessage());
+            System.out.println("Structured Request Error: "+e );
         }
     }
     
@@ -104,7 +104,7 @@ public class StructuredRequest {
         String[] regionNames = new String[0];
         // placing the body into a usable form based on the regions they're in
         try {
-            Pattern regionPattern = Pattern.compile("<([^>]*)>");
+            Pattern regionPattern = Pattern.compile("<([^\\/>]*)>");
             Matcher matcher = regionPattern.matcher(input);
 
             while(matcher.find()){
@@ -128,7 +128,7 @@ public class StructuredRequest {
             } */
             return regionNames;
         } catch (Exception e) {
-            System.out.println("Error getting Names: "+e.getMessage());
+            System.out.println("Error getting Names: "+e);
             return null;
         }
     }
@@ -156,24 +156,6 @@ public class StructuredRequest {
         }else{
             return "error";
         }
-        
-        /* Pattern regionPattern = Pattern.compile("<"+regionName+">(.|\\n)*<\\/"+regionName+">");
-        Matcher matcher = regionPattern.matcher(input);
-        // find a full region
-        if(matcher.find()){
-            String region = input.substring(matcher.start(),matcher.end()); // get a string of just that region
-            Pattern pat = Pattern.compile("<\\/*"+regionName+">"); 
-            Matcher mat = pat.matcher(region);
-            mat.find();
-            int start = mat.end();
-            mat.find();
-            int end = mat.start();
-            String regionBody = region.substring(start,end);
-            System.out.println(regionBody);
-            return regionBody;
-        }else{
-            return "error";
-        } */
     }
 
     private int[] getFileBounds(byte[] input){

@@ -70,7 +70,7 @@ public class TaskFileTransfer extends Task{
                     return "temporary file not found | "+ id;
                 }
             } catch (Exception e) {
-                System.out.println("Trying to find it: "+e.getMessage());    
+                System.out.println("Trying to find it: "+e );    
             }
             
             try{

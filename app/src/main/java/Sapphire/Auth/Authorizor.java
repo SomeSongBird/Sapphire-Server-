@@ -21,7 +21,7 @@ public class Authorizor implements IAuthorizor{
         try{
             conn = connect();
         }catch(Exception e){
-            System.err.println(e.getMessage());
+            System.err.println(e );
             System.err.println("Connection to authentication database failed");
             Menu.waitForNextKeystroke();
         }
@@ -146,7 +146,7 @@ public class Authorizor implements IAuthorizor{
                 return hm;
             }
         }catch(Exception e){
-            System.err.println(e.getMessage());
+            System.err.println(e );
         }
         throw new Exception("Unable to find any devices");
     }
@@ -168,7 +168,7 @@ public class Authorizor implements IAuthorizor{
                 connect();
             }
         }catch(SQLException sqle){
-            System.err.println(sqle.getMessage());
+            System.err.println(sqle );
             return false;
         }catch(Exception e){
             System.err.println("Unable to reconnect");

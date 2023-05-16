@@ -26,7 +26,7 @@ public abstract class Task{
             writter.append(outputString).flush();
             writter.close();
         }catch(IOException e){
-            System.out.println("Error writing task output: "+ e.getMessage());
+            System.out.println("Error writing task output: "+ e );
             return null;
         }catch(Exception e2){
             System.out.println("idk man lol "+e2.getLocalizedMessage());
