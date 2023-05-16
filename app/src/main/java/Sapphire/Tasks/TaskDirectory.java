@@ -31,7 +31,6 @@ public class TaskDirectory extends Task {
                 outputString += "<directory_details>\r\n"+r.extraDetails.get("directory_details")+"\r\n</directory_details>\r\n"; // in this case, extraDetails[0] will be the full dir structure from the other client
                 outputString += "<target_client>\r\n"+r.clientID+"\r\n</target_client>\r\n";
                 step = Step.closing;
-                System.out.println(outputString);
                 return;
             default:
                 return;

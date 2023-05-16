@@ -104,12 +104,22 @@ public class StructuredRequest {
         String[] regionNames = new String[0];
         // placing the body into a usable form based on the regions they're in
         try {
-            Pattern regionPattern = Pattern.compile("<([^\\/>]*)>");
+            Pattern regionPattern = Pattern.compile("<(\\w*)>");
             Matcher matcher = regionPattern.matcher(input);
-
+            Pattern closingPattern;
             while(matcher.find()){
-                String name = input.substring(matcher.start()+1, matcher.end()-1);
-                Pattern closingPattern = Pattern.compile("<\\/"+name+">");
+                int start = matcher.start()+1;
+                int end = matcher.end()-1;
+                //System.out.printf("%d:%d\n",start,end);
+                if(start>=end){
+                    continue;
+                }
+                String name = input.substring(start,end);
+                try{
+                    closingPattern = Pattern.compile("<\\/"+name+">");
+                }catch(Exception e) {
+                    continue;
+                }
                 Matcher secondary = closingPattern.matcher(input);
                 if(secondary.find(matcher.end())){
                     regionNames = append(regionNames,name);
@@ -147,9 +157,9 @@ public class StructuredRequest {
         Matcher endMatcher = endPattern.matcher(input);
         // find a full region
         if(startMatcher.find()){
-            int start = startMatcher.end();
+            int start = startMatcher.end()+2;
             endMatcher.find();
-            int end = endMatcher.start();
+            int end = endMatcher.start()-2;
             String body = input.substring(start,end);
             //System.out.println(body);
             return body;

@@ -121,6 +121,7 @@ public class TaskManager implements ITaskManager {
             for(int i=0;i<activeTasks.length;i++){
                 Task task = activeTasks[i];
                 if(task.nextClientID==req.clientID&&!task.delivered){
+                    System.out.printf("Client update with task: %d\n",task.id);
                     res.header("taskID",String.valueOf(task.id));
                     task.getOutput(res);
                     //System.out.println("what");
@@ -145,6 +146,7 @@ public class TaskManager implements ITaskManager {
             for(int i=0;i<activeTasks.length;i++){
                 Task task = activeTasks[i];
                 if(task.id==req.taskID){
+                    System.out.printf("Updating task: %d for client: %d\n",task.id,req.clientID);
                     res.header("taskID",String.valueOf(task.id));
                     task.executeStage(req);
                     return true;
